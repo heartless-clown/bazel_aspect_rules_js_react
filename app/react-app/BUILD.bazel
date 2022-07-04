@@ -1,0 +1,197 @@
+# Based on https://raw.githubusercontent.com/bazelbuild/rules_nodejs/stable/examples/create-react-app/BUILD.bazel
+load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_test")
+load("@aspect_rules_js//js/private:js_run_binary.bzl", "js_run_binary")
+load("@aspect_bazel_lib//lib:directory_path.bzl", "directory_path")
+load("@npm//app/react-app:react-scripts/package_json.bzl", "bin")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
+npm_link_all_packages(name = "node_modules")
+
+# Filename conventions described at
+# https://create-react-app.dev/docs/running-tests#filename-conventions
+_TESTS = [
+    "src/**/*.test.js*",
+    "src/**/*.test.ts*",
+    "src/**/*.spec.js*",
+    "src/**/*.spec.ts*",
+    "src/**/__tests__/**/*.js*",
+    "src/**/__tests__/**/*.ts*",
+]
+
+_REPO_PREFIX = ":node_modules/"
+
+_RUNTIME_DEPS = glob(
+    [
+        "public/*",
+        "src/**/*",
+    ],
+    exclude = _TESTS,
+) + [
+    "package.json",
+    "tsconfig.json",
+] + [_REPO_PREFIX + d for d in [
+    "react",
+    "react-dom",
+]]
+
+directory_path(
+    name = "react_scripts__build",
+    directory = "@//app/react-app:.aspect_rules_js/node_modules/react-scripts/5.0.1_l4duqkh7x67d4fmf6jocdn7i5q/dir",
+    path = "./scripts/build.js",
+)
+
+js_binary(
+    name = "build_script",
+    data = [_REPO_PREFIX + d for d in [
+        "react-scripts",
+        #"react-dev-utils",
+        #"fs-extra",
+        #"bfj",
+        #"webpack",
+        #"resolve",
+        #"html-webpack-plugin",
+        #"case-sensitive-paths-webpack-plugin",
+        #"terser-webpack-plugin",
+        #"mini-css-extract-plugin",
+        #"css-minimizer-webpack-plugin",
+        #"webpack-manifest-plugin",
+        #"workbox-webpack-plugin",
+        #"eslint-webpack-plugin",
+        #"@pmmmwh/react-refresh-webpack-plugin",
+        #"react-refresh",
+        #"babel-preset-react-app",
+        #"source-map-loader",
+        #"@svgr/webpack",
+        #"file-loader",
+        #"babel-loader",
+        #"css-loader",
+        #"postcss-loader",
+        #"resolve-url-loader",
+        #"sass-loader",
+        #"eslint",
+        #"eslint-config-react-app",
+        "postcss-flexbugs-fixes",
+        "postcss-preset-env",
+        "postcss-normalize",
+    ]],
+    entry_point = "react_scripts__build",
+    env = {
+        "BUILD_PATH": "./build",
+        "DISABLE_ESLINT_PLUGIN": "true",
+    },
+)
+
+js_run_binary(
+    # Note: If you want to change the name make sure you update BUILD_PATH below accordingly
+    # https://create-react-app.dev/docs/advanced-configuration/
+    name = "build",
+    srcs = _RUNTIME_DEPS + [_REPO_PREFIX + d for d in [
+        "@types/react",
+        "@types/react-dom",
+        "typescript",
+        #"babel-preset-react-app",
+        "web-vitals",
+    ]],
+    # react-scripts can only work if the working directory is the root of the application.
+    # So we'll need to chdir before it runs.
+    chdir = package_name(),
+    out_dirs = ["./build"],
+    tool = "build_script",
+)
+
+directory_path(
+    name = "react_scripts__test",
+    directory = "@//app/react-app:.aspect_rules_js/node_modules/react-scripts/5.0.1_l4duqkh7x67d4fmf6jocdn7i5q/dir",
+    path = "./scripts/test.js",
+)
+
+js_test(
+    name = "test",
+    args = [
+        # ibazel is the watch mode for Bazel when running tests
+        # Because Bazel is really a CI system that runs locally
+        "--watchAll=false",
+        "--no-cache",
+        "--no-watchman",
+        "--ci",
+    ],
+    # react-scripts can only work if the working directory is the root of the application.
+    # So we'll need to chdir before it runs.
+    chdir = package_name(),
+    data = _RUNTIME_DEPS + glob(_TESTS) + [_REPO_PREFIX + d for d in [
+        "@testing-library/jest-dom",
+        "@testing-library/react",
+        "@testing-library/user-event",
+        "react-scripts",
+        #"react-dev-utils",
+        #"jest",
+        #"react-app-polyfill",
+        "jest-watch-typeahead",
+        #"babel-jest",
+        #"babel-preset-react-app",
+        #"camelcase",
+    ]],
+    entry_point = "react_scripts__test",
+    # Need to set the pwd to avoid jest needing a runfiles helper
+    # Windows users with permissions can use --enable_runfiles
+    # to make this test work
+    tags = ["no-bazelci-windows"],
+)
+
+directory_path(
+    name = "react_scripts__start",
+    directory = "@//app/react-app:.aspect_rules_js/node_modules/react-scripts/5.0.1_l4duqkh7x67d4fmf6jocdn7i5q/dir",
+    path = "./scripts/start.js",
+)
+
+js_binary(
+    name = "start",
+    # react-scripts can only work if the working directory is the root of the application.
+    # So we'll need to chdir before it runs.
+    chdir = package_name(),
+    data = _RUNTIME_DEPS + [_REPO_PREFIX + d for d in [
+        "@types/react",
+        "@types/react-dom",
+        "react-scripts",
+        #"react-dev-utils",
+        #"webpack",
+        #"webpack-dev-server",
+        #"semver",
+        #"resolve",
+        #"html-webpack-plugin",
+        #"case-sensitive-paths-webpack-plugin",
+        #"terser-webpack-plugin",
+        #"mini-css-extract-plugin",
+        #"css-minimizer-webpack-plugin",
+        #"webpack-manifest-plugin",
+        #"workbox-webpack-plugin",
+        #"eslint-webpack-plugin",
+        "typescript",
+        #"react-refresh",
+        #"babel-preset-react-app",
+        #"source-map-loader",
+        #"@svgr/webpack",
+        #"file-loader",
+        #"babel-loader",
+        #"style-loader",
+        #"css-loader",
+        #"postcss-loader",
+        #"resolve-url-loader",
+        #"sass-loader",
+        # ESLint dependencies can be removed if DISABLE_ESLINT_PLUGIN=true
+        "eslint",
+        "eslint-config-react-app",
+        "web-vitals",
+        # Webpack dev server starts without the dependencies below
+        "postcss-flexbugs-fixes",
+        "postcss-preset-env",
+        "postcss-normalize",
+    ]],
+    entry_point = "react_scripts__start",
+    tags = [
+        # This tag instructs ibazel to pipe into stdin a event describing actions.
+        # ibazel send EOF to stdin by default and `react-scripts start` will stop when getting EOF in stdin.
+        # So use this to prevent EOF.
+        "ibazel_notify_changes",
+    ],
+)

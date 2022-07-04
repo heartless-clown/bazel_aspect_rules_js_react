@@ -8,6 +8,12 @@ specifiers:
   '@types/node': ^16.7.13
   '@types/react': ^18.0.0
   '@types/react-dom': ^18.0.0
+  eslint: ^8.19.0
+  eslint-config-react-app: ^7.0.1
+  jest-watch-typeahead: ^1.1.0
+  postcss-flexbugs-fixes: ^5.0.2
+  postcss-normalize: ^10.0.1
+  postcss-preset-env: ^7.7.2
   react: ^18.2.0
   react-dom: ^18.2.0
   react-scripts: 5.0.1
@@ -22,6 +28,12 @@ dependencies:
   '@types/node': 16.11.43
   '@types/react': 18.0.14
   '@types/react-dom': 18.0.5
+  eslint: 8.19.0
+  eslint-config-react-app: 7.0.1_qzs7qtef7jzbqpoev3vzlexeim
+  jest-watch-typeahead: 1.1.0_jest@27.5.1
+  postcss-flexbugs-fixes: 5.0.2_postcss@8.4.14
+  postcss-normalize: 10.0.1_vqntrzeodbkzmktqxvgijrtgk4
+  postcss-preset-env: 7.7.2_postcss@8.4.14
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-scripts: 5.0.1_l4duqkh7x67d4fmf6jocdn7i5q
