@@ -11,9 +11,9 @@ load("//tools:bazel_deps.bzl", "fetch_dependencies")
 
 fetch_dependencies()
 
-load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
+load("@aspect_rules_js//js:repositories.bzl", "rules_js_dependencies")
 
-build_bazel_rules_nodejs_dependencies()
+rules_js_dependencies()
 
 load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
 
@@ -22,13 +22,14 @@ nodejs_register_toolchains(
     use_nvmrc = "//:.nvmrc",
 )
 
-# The npm_install rule runs yarn anytime the package.json or package-lock.json file changes.
-# It also extracts any Bazel rules distributed in an npm package.
-load("@build_bazel_rules_nodejs//:index.bzl", "npm_install")
+load("@aspect_rules_js//npm:npm_import.bzl", "npm_translate_lock")
 
-npm_install(
-    # Name this npm so that Bazel Label references look like @npm//package
+npm_translate_lock(
     name = "npm",
-    package_json = "//:package.json",
-    package_lock_json = "//:package-lock.json",
+    pnpm_lock = "//app/react-app:pnpm-lock.yaml",
+    verify_node_modules_ignored = "//:.bazelignore",
 )
+
+load("@npm//:repositories.bzl", "npm_repositories")
+
+npm_repositories()
