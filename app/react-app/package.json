@@ -86,6 +86,9 @@
     ]
   },
   "jest": {
+    "haste": {
+      "enableSymlinks": true
+    },
     "roots": [
       "<rootDir>/src"
     ],
